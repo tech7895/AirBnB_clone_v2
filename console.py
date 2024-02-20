@@ -125,9 +125,9 @@ class HBNBCommand(cmd.Cmd):
         try:
             if not args:
                 raise SyntaxError()
-            my_list = args.split(" ")
-            obj = eval("{}()".format(my_list[0]))
-            for attr in my_list[1:]:
+            ab_list = args.split(" ")
+            obj = eval("{}()".format(ab_list[0]))
+            for attr in ab_list[1:]:
                 my_att = attr.split('=')
                 try:
                     casted = HBNBCommand.verify_attribute(my_att[1])
@@ -172,7 +172,7 @@ class HBNBCommand(cmd.Cmd):
 
         key = c_name + "." + c_id
         try:
-            print(storage._FileStorage__objects[key])
+            print(storage._FileStorage__objcts[key])
         except KeyError:
             print("** no instance found **")
 
@@ -215,7 +215,7 @@ class HBNBCommand(cmd.Cmd):
         print("[Usage]: destroy <className> <objectId>\n")
 
     def do_all(self, arg):
-        """ Shows all objects, or all objects of a class"""
+        """ Shows all objcts, or all objcts of a class"""
 
         args = shlex.split(arg)
         obj_list = []
@@ -234,13 +234,13 @@ class HBNBCommand(cmd.Cmd):
 
     def help_all(self):
         """ Help information for the all command """
-        print("Shows all objects, or all of a class")
+        print("Shows all objcts, or all of a class")
         print("[Usage]: all <className>\n")
 
     def do_count(self, args):
         """Count current number of class instances"""
         count = 0
-        for k, v in storage._FileStorage__objects.items():
+        for k, v in storage._FileStorage__objcts.items():
             if args == k.split('.')[0]:
                 count += 1
         print(count)
@@ -309,7 +309,7 @@ class HBNBCommand(cmd.Cmd):
 
             args = [att_name, att_val]
 
-        # retrieve dictionary of current objects
+        # retrieve dictionary of current objcts
         new_dict = storage.all()[key]
 
         # iterate through attr names and values
