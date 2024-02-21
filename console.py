@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-"""Defines the HBNB console."""
+
+"""This defines the HBNB console."""
 import cmd
 from shlex import split
 from models import storage
@@ -14,7 +15,8 @@ from models.review import Review
 
 
 class HBNBCommand(cmd.Cmd):
-    """Defines the HolbertonBnB command interpreter."""
+    """This defines the HolbertonBnB command
+    interpreter."""
 
     prompt = "(hbnb) "
     __classes = {
@@ -28,11 +30,11 @@ class HBNBCommand(cmd.Cmd):
     }
 
     def emptyline(self):
-        """Ignore empty spaces."""
+        """Ignores empty spaces."""
         pass
 
     def do_quit(self, line):
-        """Quit command to exit the program."""
+        """Quits command to exit the program."""
         return True
 
     def do_EOF(self, line):
@@ -41,7 +43,7 @@ class HBNBCommand(cmd.Cmd):
         return True
 
     def do_create(self, line):
-        """Usage: create <class> <key 1>=<value 2> <key 2>=<value 2> ...
+        """Usage: creates <class> <key 1>=<value 2> <key 2>=<value 2> ...
         Create a new class instance with given keys/values and print its id.
         """
         try:
@@ -90,10 +92,10 @@ class HBNBCommand(cmd.Cmd):
                 raise NameError()
             if len(ab_list) < 2:
                 raise IndexError()
-            objects = storage.all()
+            objcts = storage.all()
             key = ab_list[0] + '.' + ab_list[1]
-            if key in objects:
-                print(objects[key])
+            if key in objcts:
+                print(objcts[key])
             else:
                 raise KeyError()
         except SyntaxError:
@@ -121,10 +123,10 @@ class HBNBCommand(cmd.Cmd):
                 raise NameError()
             if len(ab_list) < 2:
                 raise IndexError()
-            objects = storage.all()
+            objcts = storage.all()
             key = ab_list[0] + '.' + ab_list[1]
-            if key in objects:
-                del objects[key]
+            if key in objcts:
+                del objcts[key]
                 storage.save()
             else:
                 raise KeyError()
@@ -140,7 +142,7 @@ class HBNBCommand(cmd.Cmd):
     def do_all(self, line):
         """Usage: all or all <class> or <class>.all()
         Display string representations of all instances of a given class.
-        If no class is specified, displays all instantiated objects."""
+        If no class is specified, displays all instantiated objcts."""
         if not line:
             o = storage.all()
             print([o[k].__str__() for k in o])
@@ -174,15 +176,15 @@ class HBNBCommand(cmd.Cmd):
                 raise NameError()
             if len(ab_list) < 2:
                 raise IndexError()
-            objects = storage.all()
+            objcts = storage.all()
             key = ab_list[0] + '.' + ab_list[1]
-            if key not in objects:
+            if key not in objcts:
                 raise KeyError()
             if len(ab_list) < 3:
                 raise AttributeError()
             if len(ab_list) < 4:
                 raise ValueError()
-            v = objects[key]
+            v = objcts[key]
             try:
                 v.__dict__[ab_list[2]] = eval(ab_list[3])
             except Exception:
@@ -209,8 +211,8 @@ class HBNBCommand(cmd.Cmd):
             ab_list = split(line, " ")
             if ab_list[0] not in self.__classes:
                 raise NameError()
-            objects = storage.all()
-            for key in objects:
+            objcts = storage.all()
+            for key in objcts:
                 name = key.split('.')
                 if name[0] == ab_list[0]:
                     counter += 1
@@ -225,21 +227,21 @@ class HBNBCommand(cmd.Cmd):
         Return:
             returns string of argumetns
         """
-        new_list = []
-        new_list.append(args[0])
+        new_lists = []
+        new_lists.append(args[0])
         try:
-            my_dict = eval(
+            ab_dict = eval(
                 args[1][args[1].find('{'):args[1].find('}')+1])
         except Exception:
-            my_dict = None
-        if isinstance(my_dict, dict):
+            ab_dict = None
+        if isinstance(ab_dict, dict):
             new_str = args[1][args[1].find('(')+1:args[1].find(')')]
-            new_list.append(((new_str.split(", "))[0]).strip('"'))
-            new_list.append(my_dict)
-            return new_list
+            new_lists.append(((new_str.split(", "))[0]).strip('"'))
+            new_lists.append(ab_dict)
+            return new_lists
         new_str = args[1][args[1].find('(')+1:args[1].find(')')]
-        new_list.append(" ".join(new_str.split(", ")))
-        return " ".join(i for i in new_list)
+        new_lists.append(" ".join(new_str.split(", ")))
+        return " ".join(i for i in new_lists)
 
     def default(self, line):
         """retrieve all instances of a class and
