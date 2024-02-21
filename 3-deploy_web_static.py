@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-script (based on the file 2-do_deploy_web_static.py) that creates and
+script (based on the file 2-do_deploy_web_static.py) which creates and
 distributes an archive to web servers
 """
 import os.path
@@ -25,14 +25,14 @@ def deploy():
         _type_: value of do_deploy
     """
     # Call the do_pack() function and store the path of the created archive
-    archive_path = do_pack()
-    if archive_path is None:
+    arch_path = do_pack()
+    if arch_path is None:
         print("Failed to create archive from web_static")
         return False
 
     # Call do_deploy function, using the new path of the new archive and
     # return the return value of do_deploy
-    return do_deploy(archive_path)
+    return do_deploy(arch_path)
 
 
 def do_pack():
@@ -50,14 +50,14 @@ def do_pack():
     """
     if not os.path.isdir("versions"):
         os.mkdir("versions")
-    cur_time = datetime.now()
+    currnt_tim = datetime.now()
     output = "versions/web_static_{}{}{}{}{}{}.tgz".format(
-        cur_time.year,
-        cur_time.month,
-        cur_time.day,
-        cur_time.hour,
-        cur_time.minute,
-        cur_time.second
+        currnt_tim.year,
+        currnt_tim.month,
+        currnt_tim.day,
+        currnt_tim.hour,
+        currnt_tim.minute,
+        currnt_tim.second
     )
     try:
         print("Packing web_static to {}".format(output))
@@ -70,37 +70,37 @@ def do_pack():
     return output
 
 
-def do_deploy(archive_path):
+def do_deploy(arch_path):
     """distributes an archive to your web servers.
 
     Args:
-        archive_path (string): path to archive
+        arch_path (string): path to archive
 
     Returns:
         Boolean: whether the archive is distributed or not
     """
-    if not os.path.exists(archive_path):
+    if not os.path.exists(arch_path):
         return False
     # Uncompress the archive to the folder,
     # /data/web_static/releases/<archive filename without extension>
     # on the web server
-    file_name = os.path.basename(archive_path)
-    folder_name = file_name.replace(".tgz", "")
-    folder_path = "/data/web_static/releases/{}/".format(folder_name)
+    name_file = os.path.basename(arch_path)
+    name_folder = name_file.replace(".tgz", "")
+    folder_path = "/data/web_static/releases/{}/".format(name_folder)
     success = False
 
     try:
         # upload the archive to the /tmp/ directory of the web server
-        put(archive_path, "/tmp/{}".format(file_name))
+        put(arch_path, "/tmp/{}".format(name_file))
 
         # Create new directory for release
         run("mkdir -p {}".format(folder_path))
 
         # Untar archive
-        run("tar -xzf /tmp/{} -C {}".format(file_name, folder_path))
+        run("tar -xzf /tmp/{} -C {}".format(name_file, folder_path))
 
         # Delete the archive from the web server
-        run("rm -rf /tmp/{}".format(file_name))
+        run("rm -rf /tmp/{}".format(name_file))
 
         # Move extraction to proper directory
         run("mv {}web_static/* {}".format(folder_path, folder_path))
