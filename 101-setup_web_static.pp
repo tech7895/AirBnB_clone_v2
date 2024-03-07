@@ -7,13 +7,25 @@ $nginx_conf = "server {
     add_header X-Served-By ${hostname};
     root   /var/www/html;
     index  index.html index.htm;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 62c23d9adb97efce3eed5239c4f284d11ca81095
     location /hbnb_static {
         alias /data/web_static/current;
         index index.html index.htm;
     }
+<<<<<<< HEAD
     location /redirect_me {
         return 301 https://th3-gr00t.tk;
     }
+=======
+
+    location /redirect_me {
+        return 301 http://cuberule.com/;
+    }
+
+>>>>>>> 62c23d9adb97efce3eed5239c4f284d11ca81095
     error_page 404 /404.html;
     location /404 {
       root /var/www/html;
