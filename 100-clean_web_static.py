@@ -1,33 +1,102 @@
 #!/usr/bin/python3
 """
-Deletes out-of-date archives
-fab -f 100-clean_web_static.py do_clean:number=2
-    -i ssh-key -u ubuntu > /dev/null 2>&1
+Fabric script based on the file 2-do_deploy_web_static.py that creates and
+distributes an archive to the web servers
 """
-
+from fabric.context_managers import cd, hide,\
+        settings, show, path, prefix, lcd, quiet, warn_only,\
+        remote_tunnel, shell_env
+from fabric.decorators import hosts, roles,\
+        runs_once, with_settings, task, serial, parallel
+from fabric.operations import require, prompt,\
+        put, get, run, sudo, local, reboot, open_shell
+from fabric.state import env, output
+from fabric.utils import abort, warn, puts, fastprint
+from fabric.tasks import execute
+from datetime import datetime
 import os
-from fabric.api import *
+import os.path
 
-env.hosts = ['52.87.155.66', '54.89.109.87']
+env.hosts = ["3.236.44.83", "44.200.29.105"]
+env.user = 'ubuntu'
+
+
+def do_pack():
+    """ function generates a tgz archive from the contents of
+    the web_static folder of the AirBnB clone
+    """
+    try:
+        my_time = datetime.now().strftime('%Y%m%d%H%M%S')
+        local("mkdir -p versions")
+        my_file = 'versions/web_static_' + my_time + '.tgz'
+        local('tar -vzcf {} web_static'.format(my_file))
+        return (my_file)
+    except Exception:
+        return None
+
+
+def do_deploy(archive_path):
+    """ function distrubtes an archive to my web servers
+    """
+    path_existence = os.path.exists(archive_path)
+    if path_existence is False:
+        return False
+    try:
+        path_split = archive_path.replace('/', ' ').replace('.', ' ').split()
+        just_directory = path_split[0]
+        no_tgz_name = path_split[1]
+        full_filename = path_split[1] + '.' + path_split[2]
+        folder = '/data/web_static/releases/{}/'.format(no_tgz_name)
+        put(archive_path, '/tmp/')
+        run('mkdir -p {}'.format(folder))
+        run('tar -xzf /tmp/{} -C {}/'.format(full_filename, folder))
+        run('rm /tmp/{}'.format(full_filename))
+        run('mv {}/web_static/* {}'.format(folder, folder))
+        run('rm -rf {}/web_static'.format(folder))
+        current = '/data/web_static/current'
+        run('rm -rf {}'.format(current))
+        run('ln -s {}/ {}'.format(folder, current))
+        return True
+    except Exception:
+        return False
+
+
+def deploy():
+    """creates and distributes an archive to the web servers"""
+    archive_path = do_pack()
+    if archive_path is None:
+        return False
+    return do_deploy(archive_path)
+
+
+def local_clean(number=0):
+    """Local Clean"""
+    _list = local('ls -1t versions', capture=True)
+    _list = _list.split('\n')
+    n = int(number)
+    if n in (0, 1):
+        n = 1
+    print(len(_list[n:]))
+    for i in _list[n:]:
+        local('rm versions/' + i)
+
+
+def remote_clean(number=0):
+    """Remote Clean"""
+    _list = run('ls -1t /data/web_static/releases')
+    _list = _list.split('\r\n')
+    print(_list)
+    n = int(number)
+    if n in (0, 1):
+        n = 1
+    print(len(_list[n:]))
+    for i in _list[n:]:
+        if i is 'test':
+            continue
+        run('rm -rf /data/web_static/releases/' + i)
 
 
 def do_clean(number=0):
-    """Delete out-of-date archives.
-    Args:
-        number (int): The number of archives to keep.
-    If number is 0 or 1, keeps only the most recent archive. If
-    number is 2, keeps the most and second-most recent archives,
-    etc.
-    """
-    number = 1 if int(number) == 0 else int(number)
-
-    archives = sorted(os.listdir("versions"))
-    [archives.pop() for i in range(number)]
-    with lcd("versions"):
-        [local("rm ./{}".format(a)) for a in archives]
-
-    with cd("/data/web_static/releases"):
-        archives = run("ls -tr").split()
-        archives = [a for a in archives if "web_static_" in a]
-        [archives.pop() for i in range(number)]
-        [run("rm -rf ./{}".format(a)) for a in archives]
+    """Fabric script that deletes aout of dates archives"""
+    local_clean(number)
+    remote_clean(number)
