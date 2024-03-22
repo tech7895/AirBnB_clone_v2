@@ -40,10 +40,10 @@
 
 	border: 1px solid #DDDDDD;
 	border-radius: 4px;
-    /* additions */
-    max-height: 300px;
+	max-height: 300px;
     overflow-y: scroll;
 }
+
 
 .locations:hover .popover {
 	display: inline-block;

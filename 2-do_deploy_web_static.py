@@ -1,37 +1,34 @@
 #!/usr/bin/python3
 """
-script (based on the file 1-pack_web_static.py) that distributes
-an archive to your web servers
+ generates a .tgz archive from the contents
+of the web_static folder
+and deploy it to web servers
 """
 
-from fabric.api import run, put, env
-import os
+from datetime import datetime
+from fabric.api import local, put, run, env
+import os.path
 
-env.hosts = ['34.138.245.164', '54.224.201.40']
+env.hosts = ['35.196.31.36', '35.237.103.48']
 
 
 def do_deploy(archive_path):
     """
-    distributes an archive to your web servers
+        deploy archive to web servers
     """
-    # verificamos si el path existe
     if os.path.exists(archive_path) is False:
-        return(False)
-    try:
-        put(archive_path, '/tmp/')
-        _filename = archive_path.split("/")[-1]
-        filename = _filename.split(".")[0]
-        run('mkdir -p /data/web_static/releases/{}'.format(filename))
-        run('tar -xzf /tmp/{} -C /data/web_static/releases/{}'.format
-            (_filename, filename))
-        run('rm /tmp/{}'.format(_filename))
-        run('mv /data/web_static/releases/{}/web_static/* \
-            /data/web_static/releases/{}/'.format(filename, filename))
-        run('rm -rf /data/web_static/releases/{}/web_static'
-            .format(filename))
-        run('rm -rf /data/web_static/current')
-        run('ln -s /data/web_static/releases/{} /data/web_static/current'
-            .format(filename))
-        return(True)
-    except:
-        return(False)
+        return False
+    arch_name = archive_path.split('/')[1]
+    arch_name_nex = arch_name.split(".")[0]
+    re_path = "/data/web_static/releases/" + arch_name_nex
+    up_path = '/tmp/' + arch_name
+    put(archive_path, up_path)
+    run('mkdir -p ' + re_path)
+    run('tar -xzf /tmp/{} -C {}/'.format(arch_name, re_path))
+    run('rm {}'.format(up_path))
+    mv = 'mv ' + re_path + '/web_static/* ' + re_path + '/'
+    run(mv)
+    run('rm -rf ' + re_path + '/web_static')
+    run('rm -rf /data/web_static/current')
+    run('ln -s ' + re_path + ' /data/web_static/current')
+    return True

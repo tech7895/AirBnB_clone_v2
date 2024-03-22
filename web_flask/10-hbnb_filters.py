@@ -1,35 +1,41 @@
 #!/usr/bin/python3
-"""This script starts a Flask web application"""
-
-
-# import Flask class from flask module
-# import render_template for rendering templates to browser
-# fetch data from storage engine
+"""
+flask model
+"""
 from flask import Flask, render_template
-
 from models import storage
+from models.state import State
+from models.amenity import Amenity
 
-# create an instance called app of the class by passong the __name__ variable
 app = Flask(__name__)
-app.url_map.strict_slashes = False
+storage.all()
 
 
 @app.teardown_appcontext
-def teardown_db(exception=None):
-    """removes the current SQLAlchemy Session
+def teardown_data(self):
     """
-    if storage is not None:
-        storage.close()
+        refrech data
+    """
+    storage.close()
 
+@app.route('/hbnb_filters', strict_slashes=False)
+def filter(id=None):
+    """
+    Display a page for hbnb_filters
+    State, City and Amenity objects must be loaded from DBStorage
+    """
+    data = storage.all(State)
+    states = []
+    for k in data:
+        states.append(data[k])
 
-@app.route('/hbnb_filters')
-def hbnb_filters(id=None):
-    """displays a HTML page: inside the tag BODY"""
-    states = storage.all("State").values()
-    amenities = storage.all("Amenity").values()
-    return render_template('10-hbnb_filters.html',
-                           states=states, amenities=amenities)
+    data = storage.all(Amenity)
+    amenities = []
+    for k in data:
+        amenities.append(data[k])
 
+    return render_template('10-hbnb_filters.html', states=states,
+        amenities=amenities)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
