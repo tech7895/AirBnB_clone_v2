@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-flask model for route
+This script is a This script is a flask model for route
 """
 from flask import Flask
 

@@ -7,7 +7,7 @@ from models.state import State
 from models.amenity import Amenity
 from models.place import Place
 """
-Script that starts a Flask web application
+This script starts a Flask web application
 """
 app = Flask(__name__)
 

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-flask model
+This script is a flask model
 """
 from flask import Flask, render_template
 from models import storage
