@@ -14,10 +14,10 @@ def do_pack():
     generate tgz archive using fabric
     """
     date = datetime.now().strftime("%Y%m%d%H%M%S")
-    file_path = "versions/web_static_{}.tgz".format(date)
+    fil_path = "versions/web_static_{}.tgz".format(date)
     if os.path.isdir("versions") is False:
         local(" mkdir versions")
-    local('tar -cvzf ' + file_path + ' web_static')
-    if os.path.exists(file_path):
-        return file_path
+    local('tar -cvzf ' + fil_path + ' web_static')
+    if os.path.exists(fil_path):
+        return fil_path
     return None

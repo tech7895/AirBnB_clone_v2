@@ -49,10 +49,10 @@ class BaseModel:
         print the instance
         :return:
         """
-        dictt = self.to_dict()
+        diction = self.to_dict()
         cls = str(type(self)).split('.')[-1].split('\'')[0]
         return "[{:s}] ({:s}) {}".format(cls, self.id,
-                                         dictt)
+                                         diction)
 
     def save(self):
         """
